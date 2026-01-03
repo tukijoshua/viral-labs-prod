@@ -1,0 +1,103 @@
+// Viral Labs Database Schema
+// Uses PostgreSQL for production-grade reliability
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model - synced with Clerk
+model User {
+  id            String   @id // Clerk user ID
+  email         String   @unique
+  firstName     String?
+  lastName      String?
+  imageUrl      String?
+
+  // Subscription info (synced from Whop)
+  subscriptionTier SubscriptionTier @default(FREE)
+  whopUserId       String?          @unique
+  whopMembershipId String?          @unique
+  subscriptionStatus String?        @default("inactive")
+
+  // Timestamps
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  audits        Audit[]
+  usageTracking UsageTracking?
+
+  @@index([email])
+  @@index([whopUserId])
+}
+
+// Audit model - stores content analysis results
+model Audit {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // File info
+  fileName    String
+  fileType    FileType
+  fileSize    Int
+  fileUrl     String
+
+  // Analysis results
+  impactScore      Int?     // 0-100
+  analysisStatus   String   @default("pending") // pending, processing, completed, failed
+
+  // AI Analysis (JSON fields)
+  viewerInterest   Json?    // For videos: pulse chart data
+  dropZones        Json?    // For videos: where viewers leave
+  auraCheck        Json?    // For images: vibe and status
+  hookStrength     Int?     // For text: 1-10 score
+  viralRewrites    Json?    // For text: suggested rewrites
+
+  // Viral Protocol (3 specific steps)
+  viralProtocol    Json?
+
+  // Growth Prediction
+  growthPrediction Json?
+
+  // Raw AI response (for debugging)
+  rawAnalysis      Json?
+
+  // Metadata
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([analysisStatus])
+}
+
+// Usage tracking for free tier limits
+model UsageTracking {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  auditsThisMonth Int      @default(0)
+  lastResetDate   DateTime @default(now())
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Enums
+enum SubscriptionTier {
+  FREE
+  PRO
+  AGENCY
+}
+
+enum FileType {
+  VIDEO
+  IMAGE
+  TEXT
+}
