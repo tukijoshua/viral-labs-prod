@@ -47,25 +47,27 @@ model Audit {
   fileType    FileType
   fileSize    Int
   fileUrl     String
+  textContent String?      // For TEXT type: store content directly (no blob fetch)
 
   // Analysis results
   impactScore      Int?     // 0-100
   analysisStatus   String   @default("pending") // pending, processing, completed, failed
 
-  // AI Analysis (JSON fields)
-  viewerInterest   Json?    // For videos: pulse chart data
-  dropZones        Json?    // For videos: where viewers leave
-  auraCheck        Json?    // For images: vibe and status
+  // Core Analysis (JSON fields)
+  viralTips        Json?    // Array of 3-5 specific, actionable improvements
+  alternatives     Json?    // Array of alternative versions with type, explanation, risk level
+  viralProtocol    Json?    // Exactly 3 steps (immediate, medium, optional)
+  platformInsights Json?    // Platform-specific analysis (X/Twitter, etc.)
+  growthPrediction Json?    // Current estimate, improved estimate, increase percentage
+
+  // Content-Specific Data
+  viewerInterest   Json?    // For videos: timestamps + scores array
+  dropZones        Json?    // For videos: timestamp + reason objects
+  auraCheck        Json?    // For images: vibe + status + score
   hookStrength     Int?     // For text: 1-10 score
-  viralRewrites    Json?    // For text: suggested rewrites
+  viralRewrites    Json?    // DEPRECATED: use alternatives instead
 
-  // Viral Protocol (3 specific steps)
-  viralProtocol    Json?
-
-  // Growth Prediction
-  growthPrediction Json?
-
-  // Raw AI response (for debugging)
+  // Raw AI response (for debugging and chat context)
   rawAnalysis      Json?
 
   // Metadata
