@@ -7,6 +7,7 @@ export async function createAudit(data: {
   fileType: FileType;
   fileSize: number;
   fileUrl: string;
+  textContent?: string;
 }) {
   return prisma.audit.create({
     data: {
@@ -35,6 +36,9 @@ export async function updateAuditAnalysis(
   data: {
     impactScore?: number;
     analysisStatus: string;
+    viralTips?: any;
+    alternatives?: any;
+    platformInsights?: any;
     viewerInterest?: any;
     dropZones?: any;
     auraCheck?: any;

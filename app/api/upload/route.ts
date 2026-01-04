@@ -23,16 +23,42 @@ export async function POST(req: Request) {
       );
     }
 
-    // Get file from form data
+    // Get form data
     const formData = await req.formData();
-    const file = formData.get("file") as File;
+    const file = formData.get("file") as File | null;
+    const pastedText = formData.get("text") as string | null;
 
-    if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 });
+    // Handle pasted text (direct text input)
+    if (pastedText) {
+      const audit = await createAudit({
+        userId,
+        fileName: `Text posted ${new Date().toLocaleDateString()}`,
+        fileType: "TEXT",
+        fileSize: pastedText.length,
+        fileUrl: "", // No blob URL needed
+        textContent: pastedText, // Store directly in database
+      });
+
+      // Increment audit count
+      await incrementAuditCount(userId);
+
+      // Trigger analysis in background
+      fetch(`${process.env.NEXT_PUBLIC_URL}/api/analyze`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ auditId: audit.id }),
+      }).catch(console.error);
+
+      return NextResponse.json({ auditId: audit.id });
     }
 
-    // Upload to Vercel Blob
-    const fileUrl = await uploadFile(file);
+    // Handle file upload
+    if (!file) {
+      return NextResponse.json(
+        { error: "No file or text provided" },
+        { status: 400 }
+      );
+    }
 
     // Determine file type
     const fileTypeStr = getFileType(file.name);
@@ -49,8 +75,40 @@ export async function POST(req: Request) {
         fileType = "TEXT";
         break;
       default:
-        return NextResponse.json({ error: "Unsupported file type" }, { status: 400 });
+        return NextResponse.json(
+          { error: "Unsupported file type" },
+          { status: 400 }
+        );
     }
+
+    // For text files, read content and store directly
+    if (fileType === "TEXT") {
+      const textContent = await file.text();
+
+      const audit = await createAudit({
+        userId,
+        fileName: file.name,
+        fileType,
+        fileSize: file.size,
+        fileUrl: "", // No blob URL needed
+        textContent, // Store directly in database
+      });
+
+      // Increment audit count
+      await incrementAuditCount(userId);
+
+      // Trigger analysis in background
+      fetch(`${process.env.NEXT_PUBLIC_URL}/api/analyze`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ auditId: audit.id }),
+      }).catch(console.error);
+
+      return NextResponse.json({ auditId: audit.id });
+    }
+
+    // For video/image files, upload to Vercel Blob
+    const fileUrl = await uploadFile(file);
 
     // Create audit in database
     const audit = await createAudit({

@@ -32,8 +32,17 @@ export async function POST(req: Request) {
           analysis = {
             impactScore: videoAnalysis.impactScore,
             analysisStatus: "completed",
+
+            // New fields
+            viralTips: videoAnalysis.viralTips,
+            alternatives: videoAnalysis.alternatives,
+            platformInsights: videoAnalysis.platformInsights,
+
+            // Video-specific
             viewerInterest: videoAnalysis.viewerInterest,
             dropZones: videoAnalysis.dropZones,
+
+            // Common fields
             viralProtocol: videoAnalysis.viralProtocol,
             growthPrediction: videoAnalysis.growthPrediction,
             rawAnalysis: videoAnalysis,
@@ -46,7 +55,16 @@ export async function POST(req: Request) {
           analysis = {
             impactScore: imageAnalysis.impactScore,
             analysisStatus: "completed",
+
+            // New fields
+            viralTips: imageAnalysis.viralTips,
+            alternatives: imageAnalysis.alternatives,
+            platformInsights: imageAnalysis.platformInsights,
+
+            // Image-specific
             auraCheck: imageAnalysis.auraCheck,
+
+            // Common fields
             viralProtocol: imageAnalysis.viralProtocol,
             growthPrediction: imageAnalysis.growthPrediction,
             rawAnalysis: imageAnalysis,
@@ -55,16 +73,32 @@ export async function POST(req: Request) {
         }
 
         case "TEXT": {
-          // Fetch text content
-          const textResponse = await fetch(audit.fileUrl);
-          const textContent = await textResponse.text();
+          // Get text content (either from textContent field or fetch from blob)
+          let textContent: string;
+
+          if (audit.textContent) {
+            // Text was stored directly in database
+            textContent = audit.textContent;
+          } else {
+            // Text is in blob storage (legacy)
+            const textResponse = await fetch(audit.fileUrl);
+            textContent = await textResponse.text();
+          }
 
           const textAnalysis = await analyzeText(textContent);
           analysis = {
             impactScore: textAnalysis.impactScore,
             analysisStatus: "completed",
+
+            // New fields
+            viralTips: textAnalysis.viralTips,
+            alternatives: textAnalysis.alternatives,
+            platformInsights: textAnalysis.platformInsights,
+
+            // Text-specific
             hookStrength: textAnalysis.hookStrength,
-            viralRewrites: textAnalysis.viralRewrites,
+
+            // Common fields
             viralProtocol: textAnalysis.viralProtocol,
             growthPrediction: textAnalysis.growthPrediction,
             rawAnalysis: textAnalysis,
@@ -83,9 +117,13 @@ export async function POST(req: Request) {
     } catch (analysisError) {
       console.error("Analysis error:", analysisError);
 
-      // Update status to failed
+      // Update status to failed with error message
       await updateAuditAnalysis(auditId, {
         analysisStatus: "failed",
+        rawAnalysis: {
+          error: analysisError instanceof Error ? analysisError.message : "Unknown error",
+          timestamp: new Date().toISOString(),
+        },
       });
 
       throw analysisError;
