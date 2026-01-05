@@ -4,7 +4,7 @@ import { getAuditById } from "@/lib/db/audits";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { userId } = await auth();
@@ -13,7 +13,8 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const audit = await getAuditById(params.id);
+    const { id } = await params;
+    const audit = await getAuditById(id);
 
     if (!audit) {
       return NextResponse.json({ error: "Audit not found" }, { status: 404 });
