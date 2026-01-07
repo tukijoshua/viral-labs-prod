@@ -14,7 +14,7 @@ export function LandingHero() {
         <h1 className="text-6xl md:text-7xl font-bold tracking-tight text-gradient leading-tight">
           See why your content works
           <br />
-          (and why it doesn't)
+          (and why it doesn&apos;t)
         </h1>
 
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
