@@ -15,7 +15,7 @@ export function ViralTipsMessage({ tips }: ViralTipsMessageProps) {
         Viral Tips
       </ChatMessageHeader>
       <ChatMessageContent>
-        <p>Here are specific, actionable improvements to maximize your content's impact:</p>
+        <p>Here are specific, actionable improvements to maximize your content&apos;s impact:</p>
 
         <div className="space-y-3 mt-4">
           {tips.map((tip, index) => (

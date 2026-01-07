@@ -45,7 +45,7 @@ export function AlternativesMessage({ alternatives }: AlternativesMessageProps) 
         Alternative Versions
       </ChatMessageHeader>
       <ChatMessageContent>
-        <p>I've created {alternatives.length} alternative versions, each optimized for engagement:</p>
+        <p>I&apos;ve created {alternatives.length} alternative versions, each optimized for engagement:</p>
 
         <div className="space-y-4 mt-4">
           {alternatives.map((alt, index) => (

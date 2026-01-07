@@ -10,7 +10,7 @@ export function ViralProtocolCard({ protocol }: ViralProtocolCardProps) {
       <div className="mb-6">
         <h2 className="text-2xl font-bold mb-2">Viral Protocol</h2>
         <p className="text-muted-foreground">
-          Follow these 3 steps to maximize your content's impact
+          Follow these 3 steps to maximize your content&apos;s impact
         </p>
       </div>
 

@@ -22,7 +22,7 @@ export function GrowthPredictionMessage({ prediction }: GrowthPredictionMessageP
       </ChatMessageHeader>
       <ChatMessageContent>
         <p className="text-white/90">
-          Based on the improvements above, here's your estimated reach increase:
+          Based on the improvements above, here&apos;s your estimated reach increase:
         </p>
 
         <div className="grid md:grid-cols-3 gap-4 my-6">

@@ -15,7 +15,7 @@ export function ViralProtocolMessage({ protocol }: ViralProtocolMessageProps) {
     <ChatMessage>
       <ChatMessageHeader>Viral Protocol</ChatMessageHeader>
       <ChatMessageContent>
-        <p>Follow these 3 steps to maximize your content's viral potential:</p>
+        <p>Follow these 3 steps to maximize your content&apos;s viral potential:</p>
 
         <div className="space-y-4 mt-4">
           {protocol.slice(0, 3).map((step, index) => {

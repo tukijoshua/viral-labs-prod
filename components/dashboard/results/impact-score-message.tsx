@@ -23,9 +23,9 @@ export function ImpactScoreMessage({ score, reasons }: ImpactScoreMessageProps) 
 
   return (
     <ChatMessage>
-      <ChatMessageHeader>I've analyzed your content</ChatMessageHeader>
+      <ChatMessageHeader>I&apos;ve analyzed your content</ChatMessageHeader>
       <ChatMessageContent>
-        <p>Here's my assessment:</p>
+        <p>Here&apos;s my assessment:</p>
 
         <div className="flex items-center gap-4 my-6">
           <div className={`text-6xl font-bold font-data ${getScoreColor(score)}`}>

@@ -60,7 +60,7 @@ export function ChatInput({ auditId, onResponse }: ChatInputProps) {
                   handleSubmit(e);
                 }
               }}
-              placeholder="Ask me anything about this analysis... (e.g., 'What's the strongest hook?', 'Which version is safest?')"
+              placeholder="Ask me anything about this analysis... (e.g., &apos;What&apos;s the strongest hook?&apos;, &apos;Which version is safest?&apos;)"
               className={cn(
                 "w-full px-4 py-3 pr-12 rounded-lg border border-border",
                 "focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent",
